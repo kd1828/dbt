@@ -1,6 +1,6 @@
 version: 2
 
-models:
+seeds:
   - name: employees
     description: a manual map of employees to customer
     columns:
