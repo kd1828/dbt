@@ -25,6 +25,8 @@ clean-targets:         # directories to be removed by `dbt clean`
   - "dbt_packages"
   - "logs"
 
+require-dbt-version: [">=1.0.0", "<2.0.0"]
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
