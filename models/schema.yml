@@ -30,7 +30,7 @@ models:
           - unique
           - not_null
       - name: status
-        description: Order status
+        description: Order status with accept values
         tests:
           - accepted_values:
               values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
