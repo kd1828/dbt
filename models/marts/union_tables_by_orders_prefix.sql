@@ -7,7 +7,3 @@
       )
       
 }}
-
--- dbt-tutorial-395913.jaffle_shop.all_days
-
--- select * from `dbt-tutorial-395913`.`jaffle_shop`.`raw_customers`
