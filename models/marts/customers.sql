@@ -49,3 +49,4 @@ final as (
 )
 
 select * from final
+-- where is_employee = true
