@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: stg_payments
+    description: This model cleans up payments data
+    columns:
+      - name: payment_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
