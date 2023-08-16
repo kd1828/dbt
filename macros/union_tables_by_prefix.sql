@@ -1,4 +1,4 @@
-{%- macro union_tables_by_prefix(database, schema, prefix) -%}
+{%- macro union_tables_by_prefix(database='dbt-tutorial-395913', schema='jaffle_shop', prefix='raw_') -%}
 
   {%- set tables = dbt_utils.get_relations_by_prefix(database=database, schema=schema, prefix=prefix) -%}
 
