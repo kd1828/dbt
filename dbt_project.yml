@@ -24,10 +24,8 @@ clean-targets: # directories to be removed by `dbt clean`
   - "dbt_packages"
   - "logs"
 
-# on-run-start: "{{ check_select_arg() }}"
-
 on-run-start:
-#  - '{{check_select_arg()}}' # call macro to check the select arg
+  - '{{check_select_arg()}}' # call macro to check the select arg
   - '{{create_udfs()}}' # comment / uncomment this line to build UDFs called in the create_udfs macro
 
 require-dbt-version: [">=1.0.0", "<2.0.0"]
