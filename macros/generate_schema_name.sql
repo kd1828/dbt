@@ -4,11 +4,10 @@
     {%- if custom_schema_name is none -%}
         
         {{ default_schema }}
-        -- if we are in PROD
-        -- then we just want custom_schema_anme
+
     {%- elif env_var('DBT_MY_ENV', '') == 'prod' -%}
 
-        {{ custom_schema_anme | trim }}
+        {{ custom_schema_name | trim }}
 
     {% else %}
 
