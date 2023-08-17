@@ -1,3 +1,5 @@
+# call macro to check select arg input?
+on-run-start: "{{ check_select_args() }}"
 
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
