@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: jaffle_shop
+    database: dbt-tutorial-395913
+    schema: jaffle_shop
+    tables:
+      - name: employees
+      - name: all_days
+        loaded_at_field: date_day
+        freshness:
+          warn_after: {count: 12, period: hour}
+          error_after: {count: 24, period: hour} 
+      - name: raw_customers
+      - name: raw_orders
+      - name: raw_payments
