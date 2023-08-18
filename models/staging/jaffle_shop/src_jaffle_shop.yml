@@ -5,8 +5,6 @@ sources:
     database: dbt-tutorial-395913
     schema: jaffle_shop
     tables:
-      - name: customers
-      - name: orders
       - name: employees
       - name: all_days
         loaded_at_field: date_day
