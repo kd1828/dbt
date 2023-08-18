@@ -12,7 +12,7 @@ orders as (
 
 employees as (
 
-    select * from {{ ref('employees') }}
+    select * from {{ source('jaffle_shop', 'employees') }}
 ),
 
 customer_orders as (
