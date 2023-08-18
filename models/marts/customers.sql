@@ -1,18 +1,18 @@
 with customers as (
 
-    select * from {{ ref('stg_customers') }}
+    select * from {{ source('jaffle_shop', 'stg_customers') }}
 
 ),
 
 orders as (
 
-    select * from {{ ref('stg_orders') }}
+    select * from {{ source('jaffle_shop', 'stg_orders') }}
 
 ),
 
 employees as (
 
-    select * from {{ ref('employees') }}
+    select * from {{ source('jaffle_shop', 'employees') }}
 ),
 
 customer_orders as (
