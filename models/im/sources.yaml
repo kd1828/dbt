@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: pei_ll_us_east1_dev_im
+    tables:
+      - name: im_pipeline_details
+    freshness:
+      warn_after: 
+        count: 12 
+        period: hour
+      filter: PARTITION_DATE>date_add(CURRENT_DATETIME(), INTERVAL -1 DAY)
+    loaded_at_field: Extract_Date
+
+
+
+
+  - name: pei_ll_us_east1_dev_bv
+    tables:
+      - name: S_PIPELINE

@@ -1,0 +1,1 @@
+select * from {{ ref('lastrun')}} where last_run_date > CURRENT_DATE()
