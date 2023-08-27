@@ -1,0 +1,24 @@
+version: 2
+
+models:
+    - name: lastrun
+      description: "Pipeline lastrun date"
+      columns:
+          - name: last_run_date
+            description: "current month last run date"
+            tests:
+                - unique
+                - not_null
+          - name: curr_month
+            description: '{{ doc("current_month") }}'
+            tests:
+                - not_null
+          - name: prev_month
+            description: "last_day prev month"
+            tests:
+                - not_null
+          - name: prev_2_month
+            description: "last_day prev 2 month"
+            tests:
+                - not_null                  
+								
