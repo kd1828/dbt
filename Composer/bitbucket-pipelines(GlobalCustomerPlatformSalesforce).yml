@@ -1,0 +1,510 @@
+# This is a sample build configuration for Other.
+# Check our guides at https://confluence.atlassian.com/x/5Q4SMw for more examples.
+# Only use spaces to indent your .yml configuration.
+# -----
+# You can specify a custom docker image from Docker Hub as your build environment.
+image:
+  name: salesforce/salesforcedx:latest-full
+
+definitions:
+  caches:
+    sonar: ~/.sonar/cache # Caching SonarCloud artifacts will speed up your build
+  steps:
+    - step: &PMDCodeAnalysis #Does the Quality check and publish it
+        name: Run PMD on source code to check the quality
+        script:
+          - echo 'PMDCode Analysis'
+          - bash ./devops/scripts/PMDCodeAnalysis.sh html PMDReport.html # Installs and runs the PMD report and output a file
+        artifacts:
+          - PMDReport.html #Puts it in the artifact where it creates a tab in the pipeline that can be downloaded. This is considered published. The artifact remains 7 days
+    - step: &SonarAnalysis
+        name: Build, test and analyze on SonarCloud
+        caches:
+          - sonar
+        script:
+          - pipe: sonarsource/sonarcloud-scan:0.1.5
+            variables:
+              SONAR_TOKEN: ${SONAR_TOKEN}
+              EXTRA_ARGS: "-Dsonar.sources=force-app -Dsonar.projectKey=salesforce"
+pipelines:
+  #################### BRANCHES MERGE #################################
+  branches:
+    master:
+      - parallel:
+          - step:
+              name: BackSync to all active branches
+              script:
+                - bash ./devops/scripts/backsync.sh $bitbucket_api_endpoint  $bitbucket_api_username $bitbucket_api_accesstoken
+
+    release/APAC/*:
+      #SIT
+      - parallel:
+          - step:
+              name: APAC - Install, configure and authenticate to the SIT Org
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh APAC_SIT 'deploy' 'RunLocalTests'
+                - bash ./devops/scripts/PostDeployment.sh APAC_SIT
+                - bash ./devops/scripts/SalesforceTesting.sh APAC_SIT
+              artifacts:
+                - test-result.xml
+          - step: *PMDCodeAnalysis
+
+      - step:
+          trigger: manual
+          name: wait for approval to deploy to UAT
+          script:
+            - echo Deployment to UAT
+      #UAT
+      - step:
+          name: APAC - Install, configure and authenticate to the UAT Org
+          deployment: UAT_APAC
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh APAC_UAT 'deploy' 'RunLocalTests'
+            - bash ./devops/scripts/PostDeployment.sh APAC_UAT
+            - bash ./devops/scripts/SalesforceTesting.sh APAC_UAT
+          artifacts:
+            - test-result.xml
+      # PreProd
+      - step:
+          name: APAC - Install, configure and authenticate to the PreProd Org
+          deployment: PreProd_APAC
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh APAC_PreProd 'checkonly' 'RunLocalTests'
+      - step:
+          trigger: manual
+          name: wait for Quick deploy from PreProd sandbox
+          script:
+            - echo Post deployment and code coverage to PreProd
+            - bash ./devops/scripts/PostDeployment.sh APAC_PreProd
+            - bash ./devops/scripts/SalesforceTesting.sh APAC_PreProd
+          artifacts:
+            - test-result.xml
+      # production
+      - step:
+          name: APAC - Install, configure and authenticate to the Production Org
+          deployment: Production_APAC
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh APAC_Production 'checkonly' 'RunLocalTests'
+      - step:
+          trigger: manual
+          name: wait for Quick deploy from Production
+          script:
+            - bash ./devops/scripts/PostDeployment.sh APAC_Production
+            - bash ./devops/scripts/SalesforceTesting.sh APAC_Production
+            - echo Create a Pull Request to promote the release code to master
+            - bash ./devops/scripts/createPRToMaster.sh $bitbucket_api_endpoint  $bitbucket_api_username $bitbucket_api_accesstoken
+          artifacts:
+            - test-result.xml
+
+    release/UK/*:
+      #SIT
+      - parallel:
+          - step:
+              name: UK - Install, configure and authenticate to the SIT Org
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh UK_SIT 'deploy' 'RunLocalTests'
+                - bash ./devops/scripts/PostDeployment.sh UK_SIT
+                - bash ./devops/scripts/SalesforceTesting.sh UK_SIT
+              artifacts:
+                - test-result.xml
+          - step: *PMDCodeAnalysis
+
+      - step:
+          trigger: manual
+          name: UK - wait for approval to deploy to UAT
+          script:
+            - echo Deployment to UAT
+      #UAT
+      - step:
+          name: UK - Install, configure and authenticate to the UAT Org
+          deployment: UAT_UK
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh UK_UAT 'deploy' 'RunLocalTests'
+            - bash ./devops/scripts/PostDeployment.sh UK_UAT
+            - bash ./devops/scripts/SalesforceTesting.sh UK_UAT
+          artifacts:
+            - test-result.xml
+      # PreProd
+      - step:
+          name: UK - Install, configure and authenticate to the PreProd Org
+          deployment: PreProd_UK
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh UK_PreProd 'checkonly' 'RunLocalTests'
+            - bash ./devops/scripts/PostDeployment.sh UK_PreProd
+            - bash ./devops/scripts/SalesforceTesting.sh UK_PreProd
+          artifacts:
+            - test-result.xml
+      # production
+      - step:
+          name: UK - Install, configure and authenticate to the Production Org
+          deployment: Production_UK
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh UK_Production 'checkonly' 'RunLocalTests'
+            - bash ./devops/scripts/SalesforceTesting.sh UK_Production
+            - bash ./devops/scripts/PostDeployment.sh UK_Production
+            - echo Create a Pull Request to integrate the release code
+            - bash ./devops/scripts/createPRToMaster.sh $bitbucket_api_endpoint  $bitbucket_api_username $bitbucket_api_accesstoken
+          artifacts:
+            - test-result.xml
+
+    release/USA/*:
+      #SIT
+      - parallel:
+          - step:
+              name: USA - Install, configure and authenticate to the SIT Org
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh USA_SIT 'deploy' 'RunLocalTests'
+                - bash ./devops/scripts/PostDeployment.sh USA_SIT
+                - bash ./devops/scripts/SalesforceTesting.sh USA_SIT
+              artifacts:
+                - test-result.xml
+          - step: *PMDCodeAnalysis
+
+      - step:
+          trigger: manual
+          name: USA - wait for approval to deploy to UAT
+          script:
+            - echo Deployment to UAT
+      #UAT
+      - step:
+          name: USA - Install, configure and authenticate to the UAT Org
+          deployment: UAT_USA
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh USA_UAT 'deploy' 'RunLocalTests'
+            - bash ./devops/scripts/PostDeployment.sh USA_UAT
+            - bash ./devops/scripts/SalesforceTesting.sh USA_UAT
+          artifacts:
+            - test-result.xml
+      # PreProd
+      - step:
+          name: USA - Install, configure and authenticate to the PreProd Org
+          deployment: PreProd_USA
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh USA_PreProd 'checkonly' 'RunLocalTests'
+            - bash ./devops/scripts/PostDeployment.sh USA_PreProd
+            - bash ./devops/scripts/SalesforceTesting.sh USA_PreProd
+          artifacts:
+            - test-result.xml
+      # production
+      - step:
+          name: USA - Install, configure and authenticate to the Production Org
+          deployment: Production_USA
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh USA_Production 'checkonly' 'RunLocalTests'
+            - bash ./devops/scripts/PostDeployment.sh USA_Production
+            - bash ./devops/scripts/SalesforceTesting.sh USA_Production
+            - echo Create a Pull Request to integrate the release code
+            - bash ./devops/scripts/createPRToMaster.sh $bitbucket_api_endpoint  $bitbucket_api_username $bitbucket_api_accesstoken
+          artifacts:
+            - test-result.xml
+
+    # develop/B2C/main:
+    #   - parallel:
+    #       - step:
+    #           name: Install, configure and authenticate to the B2C ST Org
+    #           script:
+    #             - bash ./devops/scripts/SalesforceDeploy.sh B2C_ST 'deploy' 'RunLocalTests'
+    #             - bash ./devops/scripts/PostDeployment.sh B2C_ST
+    #       - step: *PMDCodeAnalysis
+    #   - step:
+    #       name: Run The test Class
+    #       script:
+    #         - bash ./devops/scripts/SalesforceTesting.sh B2C_ST 'deploy' 'RunLocalTests'
+    #       artifacts:
+    #         - test-result.xml
+
+    #IMST
+    develop/Pipe1/main:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the IM ST Org
+              deployment: IMST
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh IM_ST 'deploy' 'NoTestRun'
+                - bash ./devops/scripts/PostDeployment.sh IM_ST
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh IM_ST 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+
+    #OSST
+    develop/OS/main:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the OS ST Org
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh OS_ST 'deploy' 'RunLocalTests'
+                - bash ./devops/scripts/PostDeployment.sh OS_ST
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh OS_ST 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+
+    #OSPREST
+    develop/OS/sprint*:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the OS PREST Org
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh OS_PreST 'deploy' 'RunLocalTests'
+                - bash ./devops/scripts/PostDeployment.sh OS_PreST
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh OS_PreST 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+
+    #BTRST
+    develop/BTR/main:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the BTR ST Org
+              deployment: BTRST
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh BTR_ST 'deploy' 'NoTestRun'
+                - bash ./devops/scripts/PostDeployment.sh BTR_ST
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh BTR_ST 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+
+    #Digital2 (Deployment of Digital2 code to DigitalST)
+    # develop/Digital2/main:
+    #   - parallel:
+    #       - step:
+    #           name: Install, configure and authenticate to the DigitalST Org
+    #           script:
+    #             - bash ./devops/scripts/SalesforceDeploy.sh Digital_ST 'deploy' 'RunLocalTests'
+    #             - bash ./devops/scripts/PostDeployment.sh Digital_ST
+    #       - step: *PMDCodeAnalysis
+    #   - step:
+    #       name: Run The test Class
+    #       script:
+    #         - bash ./devops/scripts/SalesforceTesting.sh Digital_ST 'deploy' 'RunLocalTests'
+    #       artifacts:
+    #         - test-result.xml
+
+    #RSST (Deployment of Residential Sales code to RSST)
+    develop/RS/main:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the RSST Org
+              deployment: RSST
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh RS_ST 'deploy' 'NoTestRun'
+                - bash ./devops/scripts/PostDeployment.sh RS_ST
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh RS_ST 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+
+    #BAUDEV (Deployment of Residential Sales code to BAUDEV)
+    develop/BAUDEV/main:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the BAUDEV Org
+              deployment: BAUDEV
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh BAUDEV 'deploy' 'NoTestRun'
+                - bash ./devops/scripts/PostDeployment.sh BAUDEV
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh BAUDEV 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+
+    #B2BST (Deployment of Residential Sales code to B2BST)
+    develop/B2B/main:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the B2BST Org
+              deployment: B2BST
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh B2B_ST 'deploy' 'NoTestRun'
+                - bash ./devops/scripts/PostDeployment.sh B2B_ST
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh B2B_ST 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+
+    #BTRPREST
+    develop/BTR/sprint*:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the BTR  PREST Org
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh BTR_PreST 'deploy' 'RunLocalTests'
+                - bash ./devops/scripts/PostDeployment.sh BTR_PreST
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh BTR_PreST 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+            
+    #Pipe2ST
+    develop/Pipe2/main:
+      - parallel:
+          - step:
+              name: Install, configure and authenticate to the Pipe2_ST Org
+              deployment: Pipe2ST
+              script:
+                - bash ./devops/scripts/SalesforceDeploy.sh Pipe2_ST 'deploy' 'NoTestRun'
+                - bash ./devops/scripts/PostDeployment.sh Pipe2_ST
+          - step: *PMDCodeAnalysis
+      - step:
+          name: Run The test Class
+          script:
+            - bash ./devops/scripts/SalesforceTesting.sh Pipe2_ST 'deploy' 'RunLocalTests'
+          artifacts:
+            - test-result.xml
+
+    #Platform
+    # develop/platform/main:
+    #   - parallel:
+    #       - step:
+    #           name: Install, configure and authenticate to the Platform_ST Org
+    #           deployment: Platform_ST
+    #           script:
+    #             - bash ./devops/scripts/SalesforceDeploy.sh Platform_ST 'deploy' 'NoTestRun'
+    #             - bash ./devops/scripts/PostDeployment.sh Platform_ST
+    #       - step: *PMDCodeAnalysis
+    #   - step:
+    #       name: Run The test Class
+    #       script:
+    #         - bash ./devops/scripts/SalesforceTesting.sh Platform_ST 'deploy' 'RunLocalTests'
+    #       artifacts:
+    #         - test-result.xml
+
+    hotfix/*/*:
+      - step:
+          name: Install, configure and authenticate to the Hotfix Org
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh APAC_PreProd 'checkonly' 'RunLocalTests'
+      - step:
+          trigger: manual
+          name: wait for Quick deploy from PreProd sandbox
+          script:
+            - echo Post deployment and code coverage to hotfix PreProd
+            - bash ./devops/scripts/PostDeployment.sh APAC_PreProd
+            - bash ./devops/scripts/SalesforceTesting.sh APAC_PreProd
+          artifacts:
+            - test-result.xml
+      # production
+      - step:
+          name: APAC - Install, configure and authenticate to the hotfix Production Org
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh APAC_Production 'checkonly' 'RunLocalTests'
+      - step:
+          trigger: manual
+          name: wait for Quick deploy from Production
+          script:
+            - bash ./devops/scripts/PostDeployment.sh APAC_Production
+            - bash ./devops/scripts/SalesforceTesting.sh APAC_Production
+            - echo Create a Pull Request to promote the release code to master
+            - bash ./devops/scripts/createPRToMaster.sh $bitbucket_api_endpoint  $bitbucket_api_username $bitbucket_api_accesstoken
+          artifacts:
+            - test-result.xml
+
+  ############## PULL REQUESTS ###################################
+  pull-requests:
+    "**":
+      #PullRequest
+      - parallel:
+          - step:
+              name: Install, configure, authenticate and deploy (checkonly) to the relevant Org
+              script:
+                - bash ./devops/scripts/PullRequestFalseDeployent.sh
+          - step: *PMDCodeAnalysis
+
+  ########### Custom pipeline deploy master to production - useful after hotfix ###################33
+  custom:
+    deploy-to_APAC_production:
+      # PreProd
+      - step:
+          name: APAC - Install, configure and authenticate to the PreProd Org
+          deployment: PreProd_APAC
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh APAC_PreProd 'checkonly' 'NoTestRun'
+            - bash ./devops/scripts/SalesforceTesting.sh APAC_PreProd
+          artifacts:
+            - test-result.xml
+      # Production
+      - step:
+          name: APAC - Install, configure and authenticate to the Production Org
+          deployment: Production_APAC
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh APAC_Production 'checkonly' 'NoTestRun'
+            - bash ./devops/scripts/SalesforceTesting.sh APAC_Production
+          artifacts:
+            - test-result.xml
+
+    deploy-to_UK_production:
+      # PreProd
+      - step:
+          name: UK - Install, configure and authenticate to the PreProd Org
+          deployment: PreProd_UK
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh UK_PreProd 'checkonly' 'NoTestRun'
+            - bash ./devops/scripts/SalesforceTesting.sh UK_PreProd
+          artifacts:
+            - test-result.xml
+      # Production
+      - step:
+          name: UK - Install, configure and authenticate to the Production Org
+          deployment: Production_UK
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh UK_Production 'checkonly' 'NoTestRun'
+            - bash ./devops/scripts/SalesforceTesting.sh UK_Production
+          artifacts:
+            - test-result.xml
+
+    deploy-to_USA_production:
+      # PreProd
+      - step:
+          name: USA - Install, configure and authenticate to the PreProd Org
+          deployment: PreProd_USA
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh USA_PreProd 'checkonly' 'NoTestRun'
+            - bash ./devops/scripts/SalesforceTesting.sh USA_PreProd
+          artifacts:
+            - test-result.xml
+      # Production
+      - step:
+          name: USA - Install, configure and authenticate to the Production Org
+          deployment: Production_USA
+          trigger: manual
+          script:
+            - bash ./devops/scripts/SalesforceDeploy.sh USA_Production 'checkonly' 'NoTestRun'
+            - bash ./devops/scripts/SalesforceTesting.sh USA_Production
+          artifacts:
+            - test-result.xml
