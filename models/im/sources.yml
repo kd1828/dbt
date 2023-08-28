@@ -2,6 +2,8 @@ version: 2
 
 sources:
   - name: pei_ll_us_east1_dev_im
+    database: dbt-tutorial-395913
+    schema: jaffle_shop
     tables:
       - name: im_pipeline_details
     freshness:
@@ -15,5 +17,7 @@ sources:
 
 
   - name: pei_ll_us_east1_dev_bv
+    database: dbt-tutorial-395913
+    schema: jaffle_shop
     tables:
       - name: S_PIPELINE
