@@ -3,45 +3,45 @@ with curr_prev_month_compute as
 			--- Computes curr month, prev month dates.
 		select * from {{ ref('lastrun')}} 
 			
-		),
-		curr_prev_month_last_run_compute as
-	
-		(            
-			select coalesce(cpmc.last_run_date,lastrun.last_run_date) as last_run_date,
-                curr_month,
-                prev_month,
-                prev_2_month
-                 from curr_prev_month_compute cpmc
-			cross join  {{ref('pipeline_max_date')}} as lastrun
-							order by curr_month desc limit 1 
-		),	
-		
-		s_pipeline as
-		(
-		  select a.* from 
-			(
-			Select *, date_trunc(cast(PARTITION_DATE as DATETIME),DAY) as Partitioned_date from {{source('pei_ll_us_east1_dev_bv','S_PIPELINE')}}  where dt>'1900-01-01'
-			) a 
-		 join
-		  (
-			Select H_PIPELINE_HKEY, max(date_trunc(cast(PARTITION_DATE as DATETIME),DAY)) as Partitioned_date
-			from {{source('pei_ll_us_east1_dev_bv','S_PIPELINE')}}
-			cross join curr_prev_month_last_run_compute
-			-- this is where all records until prev month are scanned
-			-- dirty data exists on dt = '2022-03-04'
-			where  dt>'2022-03-05' and cast(date_trunc(cast(PARTITION_DATE as DATETIME),DAY) as date) > last_run_date
-			group by H_PIPELINE_HKEY
-			) b on a.H_PIPELINE_HKEY =b.H_PIPELINE_HKEY and a.Partitioned_date=b.Partitioned_date
-			where trim(a.Reporting_Period) <>'0' or trim(a.Project_Number) <>'' or trim(a.CURRENCY_CODE) <> '' 
-		 ), 
-		 
-		 s_pipeline_im as 		 
-		 (
-			select * from {{source('pei_ll_us_east1_dev_im','im_pipeline_details')}}
-				where partition_date = (select max(partition_date) from {{source('pei_ll_us_east1_dev_im','im_pipeline_details')}}
-															where partition_date > '1900-01-01')
-		 ),
-		 
+	),
+
+curr_prev_month_last_run_compute as
+    (            
+        select coalesce(cpmc.last_run_date,lastrun.last_run_date) as last_run_date,
+            curr_month,
+            prev_month,
+            prev_2_month
+                from curr_prev_month_compute cpmc
+        cross join  {{ref('pipeline_max_date')}} as lastrun
+                        order by curr_month desc limit 1 
+    )
+{#
+s_pipeline as
+(
+    select a.* from 
+    (
+    Select *, date_trunc(cast(PARTITION_DATE as DATETIME),DAY) as Partitioned_date from {{source('pei_ll_us_east1_dev_bv','S_PIPELINE')}}  where '2022-03-04'>'1900-01-01'
+    ) a 
+    join
+    (
+    Select H_PIPELINE_HKEY, max(date_trunc(cast(PARTITION_DATE as DATETIME),DAY)) as Partitioned_date
+    from {{source('pei_ll_us_east1_dev_bv','S_PIPELINE')}}
+    cross join curr_prev_month_last_run_compute
+    -- this is where all records until prev month are scanned
+    -- dirty data exists on dt = '2022-03-04'
+    where  '2022-03-04'>'2022-03-05' and cast(date_trunc(cast(PARTITION_DATE as DATETIME),DAY) as date) > last_run_date
+    group by H_PIPELINE_HKEY
+    ) b on a.H_PIPELINE_HKEY =b.H_PIPELINE_HKEY and a.Partitioned_date=b.Partitioned_date
+    where trim(a.Reporting_Period) <>'0' or trim(a.Project_Number) <>'' or trim(a.CURRENCY_CODE) <> '' 
+    ), 
+    
+    s_pipeline_im as 		 
+    (
+    select * from {{source('pei_ll_us_east1_dev_im','im_pipeline_details')}}
+        where partition_date = (select max(partition_date) from {{source('pei_ll_us_east1_dev_im','im_pipeline_details')}}
+                                                    where partition_date > '1900-01-01')
+    ),
+	 
 unn as 
 	(			 
 		 -- Inserts and Updates 
@@ -215,4 +215,8 @@ unn as
 				trim(tgt.CURRENCY_CODE) = trim(src.CURRENCY_CODE)
 				where src.Project_Number is null
 					
-		) select distinct * from unn
+		)
+select distinct * from unn
+    #}
+        
+select distinct * from curr_prev_month_last_run_compute
