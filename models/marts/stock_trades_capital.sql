@@ -14,7 +14,7 @@ sells as (
     group by name
 )
 
-select S.name, 
+select S.name,
     (S.total_sells - B.total_buys) AS capital_gain_loss,
     B.total_buys, S.total_sells
 from buys B
