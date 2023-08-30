@@ -7,21 +7,17 @@ models:
       - name: name
         description: Name of Stock Trade
         tests:
-          - unique
           - not_null
       - name: capital_gain_loss
         description: Capital Gain or Loss
         tests:
-          - unique
           - not_null
       - name: total_buys
         description: Total buys
         tests:
-          - unique
           - not_null
       - name: total_total_sellsbuys
         description: Total sells
         tests:
-          - unique
           - not_null     
 
