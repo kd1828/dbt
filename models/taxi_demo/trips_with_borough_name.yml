@@ -6,9 +6,9 @@ models:
     columns:
       - name: vendor_id
         tests:
-          - not_null
           - accepted_values:
-              values: [1, 2, 4]
+              values: [1,2,4]
+          - not_null
       - name: pickup_datetime
         tests:
           - not_null
