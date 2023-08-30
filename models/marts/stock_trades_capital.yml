@@ -16,8 +16,7 @@ models:
         description: Total buys
         tests:
           - not_null
-      - name: total_total_sellsbuys
+      - name: total_sells
         description: Total sells
         tests:
-          - not_null     
-
+          - not_null
