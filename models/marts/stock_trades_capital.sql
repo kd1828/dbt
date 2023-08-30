@@ -19,5 +19,5 @@ select
     b.total_buys,
     s.total_sells
 from buys b
-join sells s on b.name = s.name
+join sells s using (name)
 order by s.total_sells desc
