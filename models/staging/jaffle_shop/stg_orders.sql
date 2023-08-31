@@ -1,15 +1,14 @@
+{#
 {{
     config (
-        meterialized = 'table'
+        materialized = 'incremental'
     )
 }}
+#}
 
 with source as (
 
     select * from {{ source('jaffle_shop', 'raw_orders') }}
-    {#
-
-    #}
 
     {% if is_incremental() %}
         where order_date >= (select max(order_date) from {{ this }})
