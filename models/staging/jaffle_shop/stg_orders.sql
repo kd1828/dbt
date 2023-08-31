@@ -1,10 +1,19 @@
+{{
+    config (
+        meterialized = 'table'
+    )
+}}
+
 with source as (
 
-    {#-
-    Normally we would select from the table here, but we are using seeds to load
-    our data in this project
-    #}
     select * from {{ source('jaffle_shop', 'raw_orders') }}
+    {#
+
+    #}
+
+    {% if is_incremental() %}
+        where order_date >= (select max(order_date) from {{ this }})
+    {% endif %}
 
 ),
 
@@ -18,7 +27,7 @@ renamed as (
 
     from source
 
-   {{ limit_data_in_dev(column_name = 'order_date', dev_days_of_data = 15000) }}
+    {{ limit_data_in_dev(column_name = 'order_date', dev_days_of_data = 1500) }}
 
 )
 
