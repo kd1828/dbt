@@ -1,2 +1,2 @@
 select *
-from {{ source('source', 'yellow_tripdata_sample_2019-01') }}
+from {{ source('jaffle_shop', 'yellow_tripdata_sample_2019_01') }}

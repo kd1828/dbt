@@ -1,2 +1,2 @@
 select *
-from {{ source('source', 'taxi_zone_lookup') }}
+from {{ source('jaffle_shop', 'taxi_zone_lookup') }}

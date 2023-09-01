@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: stock_trades_capital
+    description: This model to calculate the total sells vs buys and its capital gain or loss base on stock_trades data
+    columns:
+      - name: name
+        description: Name of Stock Trade
+        tests:
+          - not_null
+      - name: capital_gain_loss
+        description: Capital Gain or Loss
+        tests:
+          - not_null
+      - name: total_buys
+        description: Total buys
+        tests:
+          - not_null
+      - name: total_sells
+        description: Total sells
+        tests:
+          - not_null

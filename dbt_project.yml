@@ -37,12 +37,16 @@ require-dbt-version: [">=1.0.0", "<2.0.0"]
 # using the `{{ config(...) }}` macro.
 models:
   jaffle_shop:
-    materialized: table
-    # Applies to all files under models/staging/
-    staging:
-      materialized: view
+    marts:
+      materialized: table
+    # Applies to all following files under im, intermediate, staging folder are view materialized
     im:
       materialized: view
-    # Applies to all files under models/example/
+    intermediate:
+      materialized: view
+    staging:
+      materialized: view
+    taxi_demo:
+      materialized: view
     #example:
     #  materialized: view

@@ -1,0 +1,11 @@
+name,operation,operation_day,price
+Microsoft,Buy,1,1000
+Alphabet,Buy,2,10
+Microsoft,Sell,5,9000
+Amazon,Buy,17,30000
+Alphabet,Sell,3,1010
+Alphabet,Buy,4,1000
+Alphabet,Sell,5,500
+Alphabet,Buy,6,1000
+Amazon,Sell,29,7000
+Alphabet,Sell,10,10000
