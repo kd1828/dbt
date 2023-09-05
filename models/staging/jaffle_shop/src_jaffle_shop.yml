@@ -23,3 +23,4 @@ sources:
       - name: doctors
       - name: login_details
       - name: students
+      - name: weather
