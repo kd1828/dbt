@@ -24,3 +24,4 @@ sources:
       - name: login_details
       - name: students
       - name: weather
+      - name: patient_logs
