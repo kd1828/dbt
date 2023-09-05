@@ -1,0 +1,114 @@
+id,order_id,payment_method,amount,brand,product_name,price
+1,1,credit_card,1000,Apple,iPhone 12 Pro Max,1900
+2,2,credit_card,2000,Apple,iPhone 12 Pro,1200
+3,3,coupon,100,Apple,iPhone 12,1000
+4,4,coupon,2500,Apple,iPhone 12 Pro Max,1900
+5,5,bank_transfer,1700,Apple,iPhone 12 Pro,1600
+6,6,credit_card,600,Apple,iPhone 12,1000
+7,7,credit_card,1600,Apple,iPhone 12 Pro Max,1900
+8,8,credit_card,2300,Apple,iPhone 12 Pro,1200
+9,9,gift_card,2300,Apple,iPhone 12,1000
+10,9,bank_transfer,0,Apple,iPhone 12 Pro Max,1900
+11,10,bank_transfer,2600,Apple,iPhone 12 Pro,1200
+12,11,credit_card,2700,Apple,iPhone 12,1000
+13,12,credit_card,100,Apple,iPad,1900
+14,13,credit_card,500,Apple,iPad 10,1200
+15,13,bank_transfer,1400,Samsung,Note 20,1000
+16,14,bank_transfer,300,Samsung,A 74,100
+17,15,coupon,2200,Samsung,Galaxy S24,200
+18,16,credit_card,1000,Samsung,Galaxy S23,390
+19,17,bank_transfer,200,Samsung,Galaxy S22,5990
+20,18,credit_card,500,Samsung,Galaxy S21,323
+21,18,credit_card,800,Samsung,Galaxy S20,544
+22,19,gift_card,600,Samsung,Galaxy S24 Plus,733
+23,20,bank_transfer,1500,Samsung,Galaxy S23 Plus,1200
+24,21,credit_card,1200,Samsung,Galaxy S22 Plus,1000
+25,22,bank_transfer,800,Samsung,Galaxy S21 Plus,100
+26,23,gift_card,2300,Samsung,Galaxy S20 Plus,200
+27,24,coupon,2600,Samsung,Galaxy S24,390
+28,25,bank_transfer,2000,Samsung,Galaxy S23,5990
+29,25,credit_card,2200,Samsung,Galaxy S22,323
+30,25,coupon,1600,Samsung,Galaxy S21,544
+31,26,credit_card,3000,Samsung,Galaxy S20,733
+32,27,credit_card,2300,Samsung,Galaxy S24,1200
+33,28,bank_transfer,1900,Samsung,Galaxy S23,1000
+34,29,bank_transfer,1200,Samsung,Galaxy S22,100
+35,30,credit_card,1300,Samsung,Galaxy S21,200
+36,31,credit_card,1200,Samsung,Galaxy S20,390
+37,32,credit_card,300,OnePlus,OnePlus 9,5990
+38,33,credit_card,2200,OnePlus,OnePlus 7,323
+39,34,bank_transfer,1500,OnePlus,OnePlus 9 Plus,544
+40,35,credit_card,2900,OnePlus,OnePlus 9,733
+41,36,bank_transfer,900,OnePlus,OnePlus 9,1200
+42,37,credit_card,2300,OnePlus,OnePlus 9,1000
+43,38,credit_card,1500,OnePlus,OnePlus 9 Plus,100
+44,39,bank_transfer,800,OnePlus,OnePlus 7 Plus,200
+45,40,credit_card,1400,OnePlus,OnePlus 7,390
+46,41,credit_card,1700,OnePlus,OnePlus 10,5990
+47,42,coupon,1700,OnePlus,OnePlus 10 Plus,323
+48,43,gift_card,1800,OnePlus,OnePlus 9 Plus,544
+49,44,gift_card,1100,OnePlus,OnePlus 8,733
+50,45,bank_transfer,500,OnePlus,OnePlus 9 Plus,1200
+51,46,bank_transfer,800,OnePlus,OnePlus 7 Plus,1000
+52,47,credit_card,2200,OnePlus,OnePlus 7,100
+53,48,bank_transfer,300,OnePlus,OnePlus 10,200
+54,49,credit_card,600,OnePlus,OnePlus 10 Plus,390
+55,49,credit_card,900,OnePlus,OnePlus 9 Plus,5990
+56,50,credit_card,2600,Google,Nexus Note 23,323
+57,51,credit_card,2900,Google,Nexus Note 23,544
+58,51,credit_card,100,Google,Nexus Note 20,733
+59,52,bank_transfer,1500,Google,Nexus Note 21,1200
+60,53,credit_card,300,Google,Nexus Note 22,1000
+61,54,credit_card,1800,Google,Nexus Note 23 Plus,100
+62,54,bank_transfer,1100,Google,Nexus Note 22 Plus,200
+63,55,credit_card,2900,Google,Nexus Note 21 Plus,390
+64,56,credit_card,400,Google,Nexus Note 20 Plus,5990
+65,57,bank_transfer,200,Google,Nexus Note 19,323
+66,58,coupon,1800,Google,Nexus Note 23,544
+67,58,gift_card,600,Google,Nexus Note 23,733
+68,59,gift_card,2800,Google,Nexus Note 20,1200
+69,60,credit_card,400,Google,Nexus Note 21,1000
+70,61,bank_transfer,1600,Google,Nexus Note 22,100
+71,62,gift_card,1400,Google,Nexus Note 23 Plus,200
+72,63,credit_card,2900,Google,Nexus Note 22 Plus,390
+73,64,bank_transfer,2600,Google,Nexus Note 21 Plus,5990
+74,65,credit_card,0,Google,Nexus Note 20 Plus,323
+75,66,credit_card,2800,Google,Nexus Note 19,544
+76,67,bank_transfer,400,Google,Nexus Play 23,733
+77,67,credit_card,1900,Google,Nexus Play 22,1200
+78,68,credit_card,1600,Microsoft,Surface Pro 10,1000
+79,69,credit_card,1900,Microsoft,Surface Pro 9,100
+80,70,credit_card,2600,Microsoft,Surface Pro 8,200
+81,71,credit_card,500,Microsoft,Surface Pro 7,390
+82,72,credit_card,2900,Microsoft,Surface Pro 10 Plus,5990
+83,73,bank_transfer,300,Microsoft,Surface Pro 9 Plus,323
+84,74,credit_card,3000,Microsoft,Surface Pro 8 Plus,544
+85,75,credit_card,1900,Microsoft,Surface Pro 7 Plus,733
+86,76,coupon,200,Microsoft,Surface Pro 10 Plus,1200
+87,77,credit_card,0,Microsoft,Surface Pro 9 Plus,1000
+88,77,bank_transfer,1900,Microsoft,Surface Pro 8 Plus,100
+89,78,bank_transfer,2600,Microsoft,Surface Pro 7 Plus,200
+90,79,credit_card,1800,Microsoft,Surface Pro 10 Plus,390
+91,79,credit_card,900,Microsoft,Surface Pro 9 Plus,5990
+92,80,gift_card,300,Microsoft,Surface Pro 8 Plus,323
+93,81,coupon,200,Microsoft,Surface Pro 7 Plus,544
+94,82,credit_card,800,Microsoft,Surface Pro 10 Plus,733
+95,83,credit_card,100,Microsoft,Surface Pro 9 Plus,1200
+96,84,bank_transfer,2500,Microsoft,Surface Pro 8 Plus,1000
+97,85,bank_transfer,1700,Microsoft,Surface Pro 7 Plus,100
+98,86,coupon,2300,Microsoft,Surface Pro 10 Plus,200
+99,87,gift_card,3000,Microsoft,Surface Pro 9 Plus,390
+100,87,credit_card,2600,Microsoft,Surface Pro 8 Plus,5990
+101,88,credit_card,2900,Microsoft,Surface Pro 7 Plus,323
+102,89,bank_transfer,2200,Microsoft,Surface Pro 10 Plus,544
+103,90,bank_transfer,200,Microsoft,Surface Pro 9 Plus,733
+104,91,credit_card,1900,Microsoft,Surface Pro 8 Plus,1200
+105,92,bank_transfer,1500,Microsoft,Surface Pro 7 Plus,1000
+106,92,coupon,200,Sony,XR 23 Plus,100
+107,93,gift_card,2600,Sony,XR 23 Plus,200
+108,94,coupon,700,Sony,XR 22 Plus,390
+109,95,coupon,2400,Sony,XR 21 Plus,5990
+110,96,gift_card,1700,Sony,XR 20 Plus,323
+111,97,bank_transfer,1400,Sony,XR 19 Plus,544
+112,98,bank_transfer,1000,Sony,XR 23 Plus,733
+113,99,credit_card,2400,Sony,XR 22 Plus,2334
