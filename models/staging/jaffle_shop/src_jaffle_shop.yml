@@ -25,3 +25,4 @@ sources:
       - name: students
       - name: weather
       - name: patient_logs
+      - name: subset_energy_capacity
