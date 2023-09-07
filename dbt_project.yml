@@ -40,8 +40,8 @@ models:
     marts:
       materialized: table
     # create a variable called country_code and give it the default value "FR" (for France)
-    vars:
-      country_code: ["FR"]
+    #vars:
+      #country_code: "FR"
     # Applies to all following files under im, intermediate, staging folder are view materialized
     im:
       materialized: view
